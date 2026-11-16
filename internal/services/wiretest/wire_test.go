@@ -140,6 +140,7 @@ func TestDataSourceWire(t *testing.T) {
 			list:    group.NewGroupsDataSource,
 			fixture: groupFixture,
 			byID:    vals{"id": str("id-1")},
+			lookups: []vals{{"name": str("eng")}, {"name": str("missing")}},
 		},
 		{
 			name:    "team",
@@ -147,6 +148,7 @@ func TestDataSourceWire(t *testing.T) {
 			list:    team.NewTeamsDataSource,
 			fixture: teamFixture,
 			byID:    vals{"id": str("id-1")},
+			lookups: []vals{{"name": str("it")}, {"prefix": str("IT")}, {"prefix": str("missing")}},
 		},
 		{
 			name:     "app_instance",
