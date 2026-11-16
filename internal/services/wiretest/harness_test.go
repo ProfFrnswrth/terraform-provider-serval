@@ -244,3 +244,9 @@ func runDataSources(t *testing.T, tc dataSourceCase) {
 
 	r.compare(tc.name + "_data_sources")
 }
+
+func (r *recorder) note(format string, args ...any) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	fmt.Fprintf(&r.log, "  %s\n", strings.ReplaceAll(fmt.Sprintf(format, args...), r.srv.URL, "SERVER"))
+}
