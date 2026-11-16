@@ -5,7 +5,9 @@ package custom_service
 import (
 	"context"
 
+	"github.com/ServalHQ/terraform-provider-serval/internal/client"
 	flowapi "github.com/ServalHQ/terraform-provider-serval/internal/gen/proto/svflow/publicapi"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -23,13 +25,16 @@ type CustomServiceDataSourceModel struct {
 	FindOneBy *CustomServiceFindOneByDataSourceModel `tfsdk:"find_one_by"`
 }
 
-func (m *CustomServiceDataSourceModel) toListParams(_ context.Context) (params *flowapi.ListCustomServicesRequest, diags diag.Diagnostics) {
-	params = &flowapi.ListCustomServicesRequest{}
+func (m *CustomServiceDataSourceModel) toListParams(_ context.Context) (params proto.Message, diags diag.Diagnostics) {
+	req := &flowapi.ListCustomServicesRequest{}
+	var explicit []string
 
 	if !m.FindOneBy.TeamID.IsNull() {
-		params.TeamId = m.FindOneBy.TeamID.ValueString()
+		req.TeamId = m.FindOneBy.TeamID.ValueString()
+		explicit = append(explicit, "teamId")
 	}
 
+	params = client.WithExplicit(req, explicit...)
 	return
 }
 
