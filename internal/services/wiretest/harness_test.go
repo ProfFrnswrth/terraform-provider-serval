@@ -205,6 +205,9 @@ type dataSourceCase struct {
 	byID     map[string]tftypes.Value
 	findBy   map[string]tftypes.Value
 	listArgs map[string]tftypes.Value
+
+	emptyFindBy   map[string]tftypes.Value
+	emptyListArgs map[string]tftypes.Value
 }
 
 func readDataSource(r *recorder, ds datasource.DataSource, set map[string]tftypes.Value) {
@@ -241,6 +244,16 @@ func runDataSources(t *testing.T, tc dataSourceCase) {
 
 	r.step("list data source rejected", reply{http.StatusForbidden, `{"error":"forbidden"}`})
 	readDataSource(r, tc.list(), tc.listArgs)
+
+	if tc.emptyFindBy != nil {
+		r.step("data source find_one_by, empty filter", r.page(""), r.item())
+		readDataSource(r, tc.single(), findOneBy(r.ctx, tc.single(), tc.emptyFindBy))
+	}
+
+	if tc.emptyListArgs != nil {
+		r.step("list data source, empty filter", r.page(""))
+		readDataSource(r, tc.list(), tc.emptyListArgs)
+	}
 
 	r.compare(tc.name + "_data_sources")
 }
