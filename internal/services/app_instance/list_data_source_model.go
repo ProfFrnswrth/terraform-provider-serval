@@ -5,9 +5,8 @@ package app_instance
 import (
 	"context"
 
-	"github.com/ServalHQ/serval-go"
-	"github.com/ServalHQ/serval-go/packages/param"
 	"github.com/ServalHQ/terraform-provider-serval/internal/customfield"
+	flowapi "github.com/ServalHQ/terraform-provider-serval/internal/gen/proto/svflow/publicapi"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -22,11 +21,11 @@ type AppInstancesDataSourceModel struct {
 	Items    customfield.NestedObjectList[AppInstancesItemsDataSourceModel] `tfsdk:"items"`
 }
 
-func (m *AppInstancesDataSourceModel) toListParams(_ context.Context) (params serval.AppInstanceListParams, diags diag.Diagnostics) {
-	params = serval.AppInstanceListParams{}
+func (m *AppInstancesDataSourceModel) toListParams(_ context.Context) (params *flowapi.ListAppInstancesRequest, diags diag.Diagnostics) {
+	params = &flowapi.ListAppInstancesRequest{}
 
 	if !m.TeamID.IsNull() {
-		params.TeamID = param.NewOpt(m.TeamID.ValueString())
+		params.TeamId = m.TeamID.ValueString()
 	}
 
 	return

@@ -5,8 +5,7 @@ package access_policy
 import (
 	"context"
 
-	"github.com/ServalHQ/serval-go"
-	"github.com/ServalHQ/serval-go/packages/param"
+	flowapi "github.com/ServalHQ/terraform-provider-serval/internal/gen/proto/svflow/publicapi"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -26,11 +25,11 @@ type AccessPolicyDataSourceModel struct {
 	FindOneBy                    *AccessPolicyFindOneByDataSourceModel `tfsdk:"find_one_by"`
 }
 
-func (m *AccessPolicyDataSourceModel) toListParams(_ context.Context) (params serval.AccessPolicyListParams, diags diag.Diagnostics) {
-	params = serval.AccessPolicyListParams{}
+func (m *AccessPolicyDataSourceModel) toListParams(_ context.Context) (params *flowapi.ListAccessPoliciesRequest, diags diag.Diagnostics) {
+	params = &flowapi.ListAccessPoliciesRequest{}
 
 	if !m.FindOneBy.TeamID.IsNull() {
-		params.TeamID = param.NewOpt(m.FindOneBy.TeamID.ValueString())
+		params.TeamId = m.FindOneBy.TeamID.ValueString()
 	}
 
 	return

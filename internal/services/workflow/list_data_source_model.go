@@ -5,9 +5,8 @@ package workflow
 import (
 	"context"
 
-	"github.com/ServalHQ/serval-go"
-	"github.com/ServalHQ/serval-go/packages/param"
 	"github.com/ServalHQ/terraform-provider-serval/internal/customfield"
+	flowapi "github.com/ServalHQ/terraform-provider-serval/internal/gen/proto/svflow/publicapi"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -22,11 +21,11 @@ type WorkflowsDataSourceModel struct {
 	Items    customfield.NestedObjectList[WorkflowsItemsDataSourceModel] `tfsdk:"items"`
 }
 
-func (m *WorkflowsDataSourceModel) toListParams(_ context.Context) (params serval.WorkflowListParams, diags diag.Diagnostics) {
-	params = serval.WorkflowListParams{}
+func (m *WorkflowsDataSourceModel) toListParams(_ context.Context) (params *flowapi.ListWorkflowsRequest, diags diag.Diagnostics) {
+	params = &flowapi.ListWorkflowsRequest{}
 
 	if !m.TeamID.IsNull() {
-		params.TeamID = param.NewOpt(m.TeamID.ValueString())
+		params.TeamId = m.TeamID.ValueString()
 	}
 
 	return

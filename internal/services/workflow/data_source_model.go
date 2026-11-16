@@ -5,9 +5,8 @@ package workflow
 import (
 	"context"
 
-	"github.com/ServalHQ/serval-go"
-	"github.com/ServalHQ/serval-go/packages/param"
 	"github.com/ServalHQ/terraform-provider-serval/internal/customfield"
+	flowapi "github.com/ServalHQ/terraform-provider-serval/internal/gen/proto/svflow/publicapi"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -30,11 +29,11 @@ type WorkflowDataSourceModel struct {
 	FindOneBy               *WorkflowFindOneByDataSourceModel `tfsdk:"find_one_by"`
 }
 
-func (m *WorkflowDataSourceModel) toListParams(_ context.Context) (params serval.WorkflowListParams, diags diag.Diagnostics) {
-	params = serval.WorkflowListParams{}
+func (m *WorkflowDataSourceModel) toListParams(_ context.Context) (params *flowapi.ListWorkflowsRequest, diags diag.Diagnostics) {
+	params = &flowapi.ListWorkflowsRequest{}
 
 	if !m.FindOneBy.TeamID.IsNull() {
-		params.TeamID = param.NewOpt(m.FindOneBy.TeamID.ValueString())
+		params.TeamId = m.FindOneBy.TeamID.ValueString()
 	}
 
 	return

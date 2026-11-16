@@ -5,8 +5,7 @@ package app_instance
 import (
 	"context"
 
-	"github.com/ServalHQ/serval-go"
-	"github.com/ServalHQ/serval-go/packages/param"
+	flowapi "github.com/ServalHQ/terraform-provider-serval/internal/gen/proto/svflow/publicapi"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -27,11 +26,11 @@ type AppInstanceDataSourceModel struct {
 	FindOneBy                 *AppInstanceFindOneByDataSourceModel `tfsdk:"find_one_by"`
 }
 
-func (m *AppInstanceDataSourceModel) toListParams(_ context.Context) (params serval.AppInstanceListParams, diags diag.Diagnostics) {
-	params = serval.AppInstanceListParams{}
+func (m *AppInstanceDataSourceModel) toListParams(_ context.Context) (params *flowapi.ListAppInstancesRequest, diags diag.Diagnostics) {
+	params = &flowapi.ListAppInstancesRequest{}
 
 	if !m.FindOneBy.TeamID.IsNull() {
-		params.TeamID = param.NewOpt(m.FindOneBy.TeamID.ValueString())
+		params.TeamId = m.FindOneBy.TeamID.ValueString()
 	}
 
 	return

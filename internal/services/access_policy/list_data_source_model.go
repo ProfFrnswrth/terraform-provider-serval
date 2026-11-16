@@ -5,9 +5,8 @@ package access_policy
 import (
 	"context"
 
-	"github.com/ServalHQ/serval-go"
-	"github.com/ServalHQ/serval-go/packages/param"
 	"github.com/ServalHQ/terraform-provider-serval/internal/customfield"
+	flowapi "github.com/ServalHQ/terraform-provider-serval/internal/gen/proto/svflow/publicapi"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -22,11 +21,11 @@ type AccessPoliciesDataSourceModel struct {
 	Items    customfield.NestedObjectList[AccessPoliciesItemsDataSourceModel] `tfsdk:"items"`
 }
 
-func (m *AccessPoliciesDataSourceModel) toListParams(_ context.Context) (params serval.AccessPolicyListParams, diags diag.Diagnostics) {
-	params = serval.AccessPolicyListParams{}
+func (m *AccessPoliciesDataSourceModel) toListParams(_ context.Context) (params *flowapi.ListAccessPoliciesRequest, diags diag.Diagnostics) {
+	params = &flowapi.ListAccessPoliciesRequest{}
 
 	if !m.TeamID.IsNull() {
-		params.TeamID = param.NewOpt(m.TeamID.ValueString())
+		params.TeamId = m.TeamID.ValueString()
 	}
 
 	return
