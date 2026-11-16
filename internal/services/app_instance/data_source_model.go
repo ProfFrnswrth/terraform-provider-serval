@@ -5,9 +5,11 @@ package app_instance
 import (
 	"context"
 
+	"github.com/ServalHQ/terraform-provider-serval/internal/client"
 	flowapi "github.com/ServalHQ/terraform-provider-serval/internal/gen/proto/svflow/publicapi"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"google.golang.org/protobuf/proto"
 )
 
 type AppInstanceDataDataSourceEnvelope struct {
@@ -26,13 +28,16 @@ type AppInstanceDataSourceModel struct {
 	FindOneBy                 *AppInstanceFindOneByDataSourceModel `tfsdk:"find_one_by"`
 }
 
-func (m *AppInstanceDataSourceModel) toListParams(_ context.Context) (params *flowapi.ListAppInstancesRequest, diags diag.Diagnostics) {
-	params = &flowapi.ListAppInstancesRequest{}
+func (m *AppInstanceDataSourceModel) toListParams(_ context.Context) (params proto.Message, diags diag.Diagnostics) {
+	req := &flowapi.ListAppInstancesRequest{}
+	var explicit []string
 
 	if !m.FindOneBy.TeamID.IsNull() {
-		params.TeamId = m.FindOneBy.TeamID.ValueString()
+		req.TeamId = m.FindOneBy.TeamID.ValueString()
+		explicit = append(explicit, "teamId")
 	}
 
+	params = client.WithExplicit(req, explicit...)
 	return
 }
 

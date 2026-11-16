@@ -5,9 +5,11 @@ package access_policy
 import (
 	"context"
 
+	"github.com/ServalHQ/terraform-provider-serval/internal/client"
 	flowapi "github.com/ServalHQ/terraform-provider-serval/internal/gen/proto/svflow/publicapi"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"google.golang.org/protobuf/proto"
 )
 
 type AccessPolicyDataDataSourceEnvelope struct {
@@ -25,13 +27,16 @@ type AccessPolicyDataSourceModel struct {
 	FindOneBy                    *AccessPolicyFindOneByDataSourceModel `tfsdk:"find_one_by"`
 }
 
-func (m *AccessPolicyDataSourceModel) toListParams(_ context.Context) (params *flowapi.ListAccessPoliciesRequest, diags diag.Diagnostics) {
-	params = &flowapi.ListAccessPoliciesRequest{}
+func (m *AccessPolicyDataSourceModel) toListParams(_ context.Context) (params proto.Message, diags diag.Diagnostics) {
+	req := &flowapi.ListAccessPoliciesRequest{}
+	var explicit []string
 
 	if !m.FindOneBy.TeamID.IsNull() {
-		params.TeamId = m.FindOneBy.TeamID.ValueString()
+		req.TeamId = m.FindOneBy.TeamID.ValueString()
+		explicit = append(explicit, "teamId")
 	}
 
+	params = client.WithExplicit(req, explicit...)
 	return
 }
 

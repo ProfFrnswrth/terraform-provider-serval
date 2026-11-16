@@ -5,10 +5,12 @@ package workflow
 import (
 	"context"
 
+	"github.com/ServalHQ/terraform-provider-serval/internal/client"
 	"github.com/ServalHQ/terraform-provider-serval/internal/customfield"
 	flowapi "github.com/ServalHQ/terraform-provider-serval/internal/gen/proto/svflow/publicapi"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"google.golang.org/protobuf/proto"
 )
 
 type WorkflowDataDataSourceEnvelope struct {
@@ -29,13 +31,16 @@ type WorkflowDataSourceModel struct {
 	FindOneBy               *WorkflowFindOneByDataSourceModel `tfsdk:"find_one_by"`
 }
 
-func (m *WorkflowDataSourceModel) toListParams(_ context.Context) (params *flowapi.ListWorkflowsRequest, diags diag.Diagnostics) {
-	params = &flowapi.ListWorkflowsRequest{}
+func (m *WorkflowDataSourceModel) toListParams(_ context.Context) (params proto.Message, diags diag.Diagnostics) {
+	req := &flowapi.ListWorkflowsRequest{}
+	var explicit []string
 
 	if !m.FindOneBy.TeamID.IsNull() {
-		params.TeamId = m.FindOneBy.TeamID.ValueString()
+		req.TeamId = m.FindOneBy.TeamID.ValueString()
+		explicit = append(explicit, "teamId")
 	}
 
+	params = client.WithExplicit(req, explicit...)
 	return
 }
 

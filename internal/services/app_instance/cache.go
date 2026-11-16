@@ -30,7 +30,7 @@ func Prefetch(ctx context.Context, c *client.Client, teamIDs []string) (int, err
 			if pageToken != nil {
 				params.PageToken = proto.String(*pageToken)
 			}
-			query, err := client.QueryFromMessage(params)
+			query, err := client.QueryFromMessage(client.WithExplicit(params, "teamId"))
 			if err != nil {
 				return apiCalls, err
 			}
