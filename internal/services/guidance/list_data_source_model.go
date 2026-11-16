@@ -5,8 +5,8 @@ package guidance
 import (
 	"context"
 
-	"github.com/ServalHQ/serval-go"
-	"github.com/ServalHQ/serval-go/packages/param"
+	flowapi "github.com/ServalHQ/terraform-provider-serval/internal/gen/proto/svflow/publicapi"
+
 	"github.com/ServalHQ/terraform-provider-serval/internal/customfield"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -22,11 +22,11 @@ type GuidancesDataSourceModel struct {
 	Items    customfield.NestedObjectList[GuidancesItemsDataSourceModel] `tfsdk:"items"`
 }
 
-func (m *GuidancesDataSourceModel) toListParams(_ context.Context) (params serval.GuidanceListParams, diags diag.Diagnostics) {
-	params = serval.GuidanceListParams{}
+func (m *GuidancesDataSourceModel) toListParams(_ context.Context) (params *flowapi.ListGuidancesRequest, diags diag.Diagnostics) {
+	params = &flowapi.ListGuidancesRequest{}
 
 	if !m.TeamID.IsNull() {
-		params.TeamID = param.NewOpt(m.TeamID.ValueString())
+		params.TeamId = m.TeamID.ValueString()
 	}
 
 	return

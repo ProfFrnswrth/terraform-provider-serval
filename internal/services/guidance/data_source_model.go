@@ -5,8 +5,8 @@ package guidance
 import (
 	"context"
 
-	"github.com/ServalHQ/serval-go"
-	"github.com/ServalHQ/serval-go/packages/param"
+	flowapi "github.com/ServalHQ/terraform-provider-serval/internal/gen/proto/svflow/publicapi"
+
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -27,11 +27,11 @@ type GuidanceDataSourceModel struct {
 	FindOneBy             *GuidanceFindOneByDataSourceModel `tfsdk:"find_one_by"`
 }
 
-func (m *GuidanceDataSourceModel) toListParams(_ context.Context) (params serval.GuidanceListParams, diags diag.Diagnostics) {
-	params = serval.GuidanceListParams{}
+func (m *GuidanceDataSourceModel) toListParams(_ context.Context) (params *flowapi.ListGuidancesRequest, diags diag.Diagnostics) {
+	params = &flowapi.ListGuidancesRequest{}
 
 	if !m.FindOneBy.TeamID.IsNull() {
-		params.TeamID = param.NewOpt(m.FindOneBy.TeamID.ValueString())
+		params.TeamId = m.FindOneBy.TeamID.ValueString()
 	}
 
 	return

@@ -5,8 +5,8 @@ package tag
 import (
 	"context"
 
-	"github.com/ServalHQ/serval-go"
-	"github.com/ServalHQ/serval-go/packages/param"
+	flowapi "github.com/ServalHQ/terraform-provider-serval/internal/gen/proto/svflow/publicapi"
+
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
@@ -24,11 +24,11 @@ type TagDataSourceModel struct {
 	FindOneBy *TagFindOneByDataSourceModel `tfsdk:"find_one_by"`
 }
 
-func (m *TagDataSourceModel) toListParams(_ context.Context) (params serval.TagListParams, diags diag.Diagnostics) {
-	params = serval.TagListParams{}
+func (m *TagDataSourceModel) toListParams(_ context.Context) (params *flowapi.ListTagsRequest, diags diag.Diagnostics) {
+	params = &flowapi.ListTagsRequest{}
 
 	if !m.FindOneBy.TeamID.IsNull() {
-		params.TeamID = param.NewOpt(m.FindOneBy.TeamID.ValueString())
+		params.TeamId = m.FindOneBy.TeamID.ValueString()
 	}
 
 	return
