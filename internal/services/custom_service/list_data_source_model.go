@@ -5,7 +5,9 @@ package custom_service
 import (
 	"context"
 
+	"github.com/ServalHQ/terraform-provider-serval/internal/client"
 	flowapi "github.com/ServalHQ/terraform-provider-serval/internal/gen/proto/svflow/publicapi"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/ServalHQ/terraform-provider-serval/internal/customfield"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -22,13 +24,16 @@ type CustomServicesDataSourceModel struct {
 	Items    customfield.NestedObjectList[CustomServicesItemsDataSourceModel] `tfsdk:"items"`
 }
 
-func (m *CustomServicesDataSourceModel) toListParams(_ context.Context) (params *flowapi.ListCustomServicesRequest, diags diag.Diagnostics) {
-	params = &flowapi.ListCustomServicesRequest{}
+func (m *CustomServicesDataSourceModel) toListParams(_ context.Context) (params proto.Message, diags diag.Diagnostics) {
+	req := &flowapi.ListCustomServicesRequest{}
+	var explicit []string
 
 	if !m.TeamID.IsNull() {
-		params.TeamId = m.TeamID.ValueString()
+		req.TeamId = m.TeamID.ValueString()
+		explicit = append(explicit, "teamId")
 	}
 
+	params = client.WithExplicit(req, explicit...)
 	return
 }
 

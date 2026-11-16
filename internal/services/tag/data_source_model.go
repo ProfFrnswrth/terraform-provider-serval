@@ -5,7 +5,9 @@ package tag
 import (
 	"context"
 
+	"github.com/ServalHQ/terraform-provider-serval/internal/client"
 	flowapi "github.com/ServalHQ/terraform-provider-serval/internal/gen/proto/svflow/publicapi"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -24,13 +26,16 @@ type TagDataSourceModel struct {
 	FindOneBy *TagFindOneByDataSourceModel `tfsdk:"find_one_by"`
 }
 
-func (m *TagDataSourceModel) toListParams(_ context.Context) (params *flowapi.ListTagsRequest, diags diag.Diagnostics) {
-	params = &flowapi.ListTagsRequest{}
+func (m *TagDataSourceModel) toListParams(_ context.Context) (params proto.Message, diags diag.Diagnostics) {
+	req := &flowapi.ListTagsRequest{}
+	var explicit []string
 
 	if !m.FindOneBy.TeamID.IsNull() {
-		params.TeamId = m.FindOneBy.TeamID.ValueString()
+		req.TeamId = m.FindOneBy.TeamID.ValueString()
+		explicit = append(explicit, "teamId")
 	}
 
+	params = client.WithExplicit(req, explicit...)
 	return
 }
 
