@@ -171,10 +171,7 @@ func (r *CustomServiceResource) Delete(ctx context.Context, req resource.DeleteR
 		return
 	}
 
-	res, err := r.client.DoID(ctx, http.MethodDelete, "v2/custom-services", data.ID.ValueString(), nil, logging.Middleware(ctx))
-	if res != nil {
-		res.Body.Close()
-	}
+	err := r.client.DeleteID(ctx, "v2/custom-services", data.ID.ValueString(), logging.Middleware(ctx))
 	if err != nil {
 		resp.Diagnostics.AddError("failed to make http request", err.Error())
 		return

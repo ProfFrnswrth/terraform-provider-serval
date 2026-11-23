@@ -110,6 +110,10 @@ func (p *ServalProvider) Configure(ctx context.Context, req provider.ConfigureRe
 	opts := []option.RequestOption{}
 
 	if v, ok := configValue(data.BaseURL, "SERVAL_BASE_URL"); ok {
+		if v == "" {
+			resp.Diagnostics.AddError("invalid provider configuration", "base_url (or SERVAL_BASE_URL) is set but empty")
+			return
+		}
 		cfg.BaseURL = v
 		opts = append(opts, option.WithBaseURL(v))
 	}
