@@ -171,8 +171,8 @@ func (r *WorkflowApprovalProcedureResource) Delete(ctx context.Context, req reso
 	}
 
 	res, err := doRequest(ctx, r.client, http.MethodDelete, data.WorkflowID.ValueString(), data.ID.ValueString(), nil)
-	if res != nil {
-		res.Body.Close()
+	if err == nil {
+		err = client.CheckJSONBody(res)
 	}
 	if err != nil {
 		resp.Diagnostics.AddError("failed to make http request", err.Error())

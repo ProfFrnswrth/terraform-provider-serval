@@ -171,10 +171,7 @@ func (r *AppResourceRoleResource) Delete(ctx context.Context, req resource.Delet
 		return
 	}
 
-	res, err := r.client.DoID(ctx, http.MethodDelete, "v2/app-resource-roles", data.ID.ValueString(), nil, logging.Middleware(ctx))
-	if res != nil {
-		res.Body.Close()
-	}
+	err := r.client.DeleteID(ctx, "v2/app-resource-roles", data.ID.ValueString(), logging.Middleware(ctx))
 	if err != nil {
 		resp.Diagnostics.AddError("failed to make http request", err.Error())
 		return
