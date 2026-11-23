@@ -38,10 +38,11 @@ func (c *Client) DeleteID(ctx context.Context, collection, id string, mws ...Mid
 	if err != nil {
 		return err
 	}
-	return checkJSONBody(res)
+	return CheckJSONBody(res)
 }
 
-func checkJSONBody(res *http.Response) error {
+// CheckJSONBody consumes and closes res, failing unless it carries a JSON body as serval-go required.
+func CheckJSONBody(res *http.Response) error {
 	defer res.Body.Close()
 	contents, err := io.ReadAll(res.Body)
 	if err != nil {

@@ -163,10 +163,7 @@ func (r *TeamUserResource) Delete(ctx context.Context, req resource.DeleteReques
 		return
 	}
 
-	res, err := r.client.DoID(ctx, http.MethodDelete, "v2/team-users", data.ID.ValueString(), nil, logging.Middleware(ctx))
-	if res != nil {
-		res.Body.Close()
-	}
+	err := r.client.DeleteID(ctx, "v2/team-users", data.ID.ValueString(), logging.Middleware(ctx))
 	if err != nil {
 		resp.Diagnostics.AddError("failed to make http request", err.Error())
 		return
