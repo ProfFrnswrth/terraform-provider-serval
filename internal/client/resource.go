@@ -1,10 +1,16 @@
 package client
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
+	"io"
+	"mime"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"google.golang.org/protobuf/proto"
 )
@@ -24,6 +30,33 @@ func (c *Client) DoIDQuery(ctx context.Context, method, collection, id string, q
 		return nil, errMissingID
 	}
 	return c.Do(ctx, Request{Method: method, Path: collection + "/" + id, Query: query, Body: body, Middlewares: mws})
+}
+
+// DeleteID deletes collection/id, accepting only a JSON response body as serval-go did.
+func (c *Client) DeleteID(ctx context.Context, collection, id string, mws ...Middleware) error {
+	res, err := c.DoID(ctx, http.MethodDelete, collection, id, nil, mws...)
+	if err != nil {
+		return err
+	}
+	return checkJSONBody(res)
+}
+
+func checkJSONBody(res *http.Response) error {
+	defer res.Body.Close()
+	contents, err := io.ReadAll(res.Body)
+	if err != nil {
+		return fmt.Errorf("error reading response body: %w", err)
+	}
+	contentType := res.Header.Get("Content-Type")
+	mediaType, _, _ := mime.ParseMediaType(contentType)
+	if !strings.Contains(mediaType, "application/json") && !strings.HasSuffix(mediaType, "+json") {
+		return fmt.Errorf("%s %s: expected a JSON response, got content-type %q", res.Request.Method, res.Request.URL.Path, contentType)
+	}
+	var v any
+	if err := json.NewDecoder(bytes.NewReader(contents)).Decode(&v); err != nil {
+		return fmt.Errorf("error parsing response json: %w", err)
+	}
+	return nil
 }
 
 // FirstPage fetches one page of a list endpoint with params encoded as its query.
